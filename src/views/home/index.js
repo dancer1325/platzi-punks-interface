@@ -6,6 +6,7 @@ import {
   Button,
   Image,
   Badge,
+  useToast,
 } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
 import { useEffect, useCallback, useState } from "react";
@@ -16,9 +17,11 @@ import useTruncatedAddress from "../../hooks/useTruncatedAddress";
 const Home = () => {
   const [nextId, setNextId] = useState(-1);
   const [imageSrc, setImageSrc] = useState("");
+  const [minting, setMinting] = useState(false);
   const { active, account } = useWeb3React();
   const platziPunks = usePlatziPunks();
   const truncatedAddress = useTruncatedAddress(account);
+  const toast = useToast();
 
   const getPlatziPunksData = useCallback(async () => {
     if (platziPunks) {
@@ -35,6 +38,35 @@ const Home = () => {
   useEffect(() => {
     getPlatziPunksData();
   }, [active, getPlatziPunksData]);
+
+  const mint = () => {
+    setMinting(true);
+
+    platziPunks.methods
+      .mint()
+      .send({
+        from: account,
+      })
+      .on("error", () => {
+        setMinting(false);
+      })
+      .on("transactionHash", (txHash) => {
+        toast({
+          title: "Transacción enviada",
+          description: txHash,
+          status: "info",
+        });
+      })
+      .on("receipt", () => {
+        setMinting(false);
+        toast({
+          title: "Transacción confirmada",
+          description: "Nunca pares de aprender",
+          status: "success",
+        });
+        getPlatziPunksData();
+      });
+  };
 
   return (
     <Stack
@@ -93,6 +125,8 @@ const Home = () => {
             bg={"green.400"}
             _hover={{ bg: "green.500" }}
             disabled={!platziPunks}
+            isLoading={minting}
+            onClick={mint}
           >
             Obtén tu punk
           </Button>
