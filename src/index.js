@@ -1,20 +1,23 @@
-import React from "react";
-import ReactDOM from "react-dom";
-import App from "./App";
-import { ChakraProvider } from "@chakra-ui/react";
-import { HashRouter as Router } from "react-router-dom";
-import { Web3ReactProvider } from "@web3-react/core";
-import { getLibrary } from "./config/web3";
+require("dotenv").config();     // By default it looks for the file '.env'
 
-ReactDOM.render(
-  <React.StrictMode>
-    <Router>
-      <ChakraProvider>
-        <Web3ReactProvider getLibrary={getLibrary}>
-          <App />
-        </Web3ReactProvider>
-      </ChakraProvider>
-    </Router>
-  </React.StrictMode>,
-  document.getElementById("root")
+// Classes start with capital letter
+const Web3 = require('web3');
+
+
+// Instantiate an object
+// InfuraURL to which one to connect. Got it from // other project which creates the smart contract 
+const web3 = new Web3(`https://rinkeby.infura.io/v3/${process.env.INFURA_PROJECT_ID}`);
+
+console.log(web3);
+
+// returns the current block number
+web3.eth.getBlockNumber().then(number => {
+    console.log(number);
+    // You can check the value in etherscan.io
+});
+
+// Alternative to manage promises
+web3.eth.getBlockNumber().then(
+    console.log
+    // You can check the value in etherscan.io
 );
