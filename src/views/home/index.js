@@ -130,7 +130,7 @@ const Home = () => {
           >
             Obtén tu punk
           </Button>
-          <Link to="/punks">
+          <Link to="/punks">  {/* Declarative and accesible navigation around the application */}
             <Button rounded={"full"} size={"lg"} fontWeight={"normal"} px={6}>
               Galería
             </Button>
