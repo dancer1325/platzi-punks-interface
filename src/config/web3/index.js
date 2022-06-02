@@ -6,6 +6,9 @@ const supportedChainIds = [
 ];
 
 const getLibrary = (provider) => new Web3(provider);
+// Alternative
+// 1) Use directly window.ethereum
+// Example: Check in the branch "Section2"
 
 const connector = new InjectedConnector({
   supportedChainIds,

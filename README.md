@@ -22,6 +22,12 @@ Platzi Punks are randomized Avataaars stored on chain to teach DApp development 
     * Unnecessary to use web3
 * '@chakra-ui/react'
   * Make easier to add components
+* `window.ethereum`
+  * In the browser's console
+  * Exposure of the RPC's method, thanks to Metamask
+* `window.ethereum.request({method:'eth_requestAccounts'})`
+  * Invoke to JSON RPC's method
+  * Intercepted by MetaMask
 
 # How to execute / run?
 * `yarn install`
