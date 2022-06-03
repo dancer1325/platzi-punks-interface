@@ -15,18 +15,26 @@ import usePlatziPunks from "../../hooks/usePlatziPunks";
 import useTruncatedAddress from "../../hooks/useTruncatedAddress";
 
 const Home = () => {
+  // Create state variables
   const [nextId, setNextId] = useState(-1);
   const [imageSrc, setImageSrc] = useState("");
+  const [maxSupply, setMaxSupply] = useState(0);
+  const [availablePunks, setAvailablePunks] = useState("");
   const [minting, setMinting] = useState(false);
   const { active, account } = useWeb3React();
   const platziPunks = usePlatziPunks();
   const truncatedAddress = useTruncatedAddress(account);
-  const toast = useToast();
+  const toast = useToast(); // Generate messages into the UI https://chakra-ui.com/docs/components/feedback/toast
 
+  // useCallback, because it's going to be invoked in a Hook
   const getPlatziPunksData = useCallback(async () => {
     if (platziPunks) {
+      // .call()  Used for methods which don't mute the blockchain's state, just to return the information
+      const maxSupply = await platziPunks.methods.maxSupply().call();
+      setMaxSupply(maxSupply);
       const totalSupply = await platziPunks.methods.totalSupply().call();
       setNextId(totalSupply);
+      setAvailablePunks(maxSupply - totalSupply);
       const dnaPreview = await platziPunks.methods
         .deterministicPseudoRandomDNA(totalSupply, account)
         .call();
@@ -42,17 +50,27 @@ const Home = () => {
   const mint = () => {
     setMinting(true);
 
+    // Don't wait because it would be necessary to wait that the transaction hash is generated
     platziPunks.methods
       .mint()
       .send({
-        from: account,
-      })
-      .on("error", () => {
+        from: account,  // Address from which the transaction is sent
+      })  // Send a transaction to the smart contract
+      // https://web3js.readthedocs.io/en/v1.7.1/web3-eth-contract.html#methods-mymethod-send
+      // .on("sending")
+      // .on("sent")
+      // .on("confirmation")
+      .on("error", (error) => {
         setMinting(false);
+        toast({
+          title: "Transaction rejected",
+          description: error.message,
+          status: "error",
+        })
       })
       .on("transactionHash", (txHash) => {
         toast({
-          title: "Transacción enviada",
+          title: "Transaction sent",
           description: txHash,
           status: "info",
         });
@@ -60,8 +78,8 @@ const Home = () => {
       .on("receipt", () => {
         setMinting(false);
         toast({
-          title: "Transacción confirmada",
-          description: "Nunca pares de aprender",
+          title: "Transaction confirmed",
+          description: "",
           status: "success",
         });
         getPlatziPunksData();
@@ -95,22 +113,19 @@ const Home = () => {
               zIndex: -1,
             }}
           >
-            Un Platzi Punk
+            Punk
           </Text>
           <br />
-          <Text as={"span"} color={"green.400"}>
-            nunca para de aprender
-          </Text>
         </Heading>
         <Text color={"gray.500"}>
-          Platzi Punks es una colección de Avatares randomizados cuya metadata
-          es almacenada on-chain. Poseen características únicas y sólo hay 10000
-          en existencia.
+          Punk is an random Avatar collection whose metadata
+          is stored on-chain. They have got unique characteristics
+          and there are just 10000.
         </Text>
         <Text color={"green.500"}>
-          Cada Platzi Punk se genera de forma secuencial basado en tu address,
-          usa el previsualizador para averiguar cuál sería tu Platzi Punk si
-          minteas en este momento
+          Each Punk is generated sequentially based on your address,
+          use the previsualize to find out which one would be your Punk if
+          you mint in that moment
         </Text>
         <Stack
           spacing={{ base: 4, sm: 6 }}
@@ -128,11 +143,11 @@ const Home = () => {
             isLoading={minting}
             onClick={mint}
           >
-            Obtén tu punk
+            Get your punk
           </Button>
-          <Link to="/punks">  {/* Declarative and accesible navigation around the application */}
+          <Link to="/punks">  {/* Declarative and accessible navigation around the application */}
             <Button rounded={"full"} size={"lg"} fontWeight={"normal"} px={6}>
-              Galería
+              Media gallery
             </Button>
           </Link>
         </Stack>
@@ -148,31 +163,39 @@ const Home = () => {
         <Image src={active ? imageSrc : "https://avataaars.io/"} />
         {active ? (
           <>
-            <Flex mt={2}>
+            <Flex mt={3}>
               <Badge>
                 Next ID:
                 <Badge ml={1} colorScheme="green">
                   {nextId}
                 </Badge>
               </Badge>
-              <Badge ml={2}>
+              <Badge>
+                Available:
+                <Badge ml={2} colorScheme="green">
+                  {availablePunks}
+                </Badge>
+              </Badge>
+              <Badge ml={3}>
                 Address:
                 <Badge ml={1} colorScheme="green">
                   {truncatedAddress}
                 </Badge>
               </Badge>
             </Flex>
+            {/* Since at the same time another user could try to get his/her Punk and mint the transaction
+            previous to you --> that punk couldn't be available anymore*/}
             <Button
               onClick={getPlatziPunksData}
               mt={4}
               size="xs"
               colorScheme="green"
             >
-              Actualizar
+              Update
             </Button>
           </>
         ) : (
-          <Badge mt={2}>Wallet desconectado</Badge>
+          <Badge mt={2}>Disconnected wallet</Badge>
         )}
       </Flex>
     </Stack>

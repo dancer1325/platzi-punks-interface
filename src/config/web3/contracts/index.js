@@ -1,6 +1,8 @@
+// Paste from the artifacts folder generated after compiling the smart contract
 const PlatziPunks = {
   address: {
-    4: "0xc1060a1a475b17cd65cf3580f030bc6d110526c8",
+    // Smart contract's address. You can copy from the etherscan
+    4: "0x33970544A31AF55dA81Dc82F5f43985DE4f79A23",
   },
   abi: [
     {
