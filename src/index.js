@@ -11,6 +11,8 @@ ReactDOM.render(
     <Router>
       <ChakraProvider>  {/* Set up ChakraProvider at the root of the application */}
         <Web3ReactProvider getLibrary={getLibrary}>
+        {/* https://github.com/NoahZinsmeister/web3-react/tree/v6/docs#web3reactprovider */}
+        {/* Instantiate a web3 library object from a low-level provider */}
           <App />
         </Web3ReactProvider>
       </ChakraProvider>

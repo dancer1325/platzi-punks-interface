@@ -20,8 +20,12 @@ Platzi Punks are randomized Avataaars stored on chain to teach DApp development 
 * '@web3-react'
   * It can be used with any wrapper
     * Unnecessary to use web3
+* '@web3-react/injected-connector'
+  * Handle injected connectors with web3
 * '@chakra-ui/react'
   * Make easier to add components
+  * 'layouts' folder
+    * come from Chakra
 * `window.ethereum`
   * In the browser's console
   * Exposure of the RPC's method, thanks to Metamask

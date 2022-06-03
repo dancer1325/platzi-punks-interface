@@ -14,32 +14,41 @@ import { connector } from "../../../config/web3";
 import useTruncatedAddress from "../../../hooks/useTruncatedAddress";
 
 const WalletData = () => {
+  // state variable
   const [balance, setBalance] = useState(0);
+
+  // If you are using Hooks and you want to access context variables
+  // https://github.com/NoahZinsmeister/web3-react/tree/v6/docs#useweb3react
+  // library. Once the library is activated --> it's available via key library
+  // account. The one which it's connected
   const { activate, account, library, active, deactivate, error } =
     useWeb3React();
 
   const isUnsupportedChain = error instanceof UnsupportedChainIdError;
 
+  // Check that in each render is connected
   const connect = useCallback(() => {
     activate(connector);
-    localStorage.setItem("previouslyConnected", "true");
+    localStorage.setItem("previouslyConnected", "true");    // Store in the localStorage. Returns string values
   }, [activate]);
 
+  // Hook which handles refresh events
+  // connect automatically
   useEffect(() => {
-    if (localStorage.getItem("previouslyConnected") === "true") connect();
+    if (localStorage.getItem("previouslyConnected") === "true") connect();  // Depends on
   }, [connect]);
 
   const getBalance = useCallback(async () => {
     const balance = await library.eth.getBalance(account);
-    setBalance((balance / 1e18).toFixed(2));
+    setBalance((balance / 1e18).toFixed(2));  // Divide by 1e18 to display in eth
   }, [account, library]);
 
   useEffect(() => {
-    if (active) getBalance();
-  }, [active, getBalance]);
+    if (active) getBalance();   // Just in case if it's active the connection to the provider
+  }, [active, getBalance]);     // listen changes on active and getBalance
 
   const disconnect = () => {
-    deactivate();
+    deactivate();     // Deactivate to the provider from our account
     localStorage.removeItem("previouslyConnected");
   };
 
@@ -47,7 +56,8 @@ const WalletData = () => {
 
   return (
     <Flex alignItems={"center"}>
-      {active ? (
+      {/* If it's connected to the provider --> enable it */}
+      {active ? (     
         <Tag colorScheme="green" borderRadius="full">
           <TagLabel>
             <Link to={`/punks?address=${account}`}>{truncatedAddress}</Link>
@@ -74,7 +84,7 @@ const WalletData = () => {
           onClick={connect}
           disabled={isUnsupportedChain}
         >
-          {isUnsupportedChain ? "Red no soportada" : "Conectar wallet"}
+          {isUnsupportedChain ? "Unsupported chain" : "Connect wallet"}
         </Button>
       )}
     </Flex>
