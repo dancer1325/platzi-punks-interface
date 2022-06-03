@@ -2,6 +2,7 @@ import { useWeb3React } from "@web3-react/core";
 import { useCallback, useEffect, useState } from "react";
 import usePlatziPunks from "../usePlatziPunks";
 
+// async because it calls to the smart contract
 const getPunkData = async ({ platziPunks, tokenId }) => {
   const [
     accessoriesType,
@@ -20,7 +21,7 @@ const getPunkData = async ({ platziPunks, tokenId }) => {
     tokenURI,
     dna,
     owner,
-  ] = await Promise.all([
+  ] = await Promise.all([   // List of Promises to create
     platziPunks.methods.getAccessoriesType(tokenId).call(),
     platziPunks.methods.getClotheColor(tokenId).call(),
     platziPunks.methods.getClotheType(tokenId).call(),
@@ -38,6 +39,7 @@ const getPunkData = async ({ platziPunks, tokenId }) => {
     platziPunks.methods.tokenDNA(tokenId).call(),
     platziPunks.methods.ownerOf(tokenId).call(),
   ]);
+  // tokenURI is in Base64 --> we need to make a fetch to convert to JSON
   const response = await fetch(tokenURI);
   const metadata = await response.json();
 
@@ -68,16 +70,17 @@ const usePunksData = ({ owner = null } = {}) => {
   const [punks, setPunks] = useState([]);
   const { library } = useWeb3React();
   const [loading, setLoading] = useState(true);
-  const platziPunks = usePlatziPunks();
+  const platziPunks = usePlatziPunks(); // Instantiate the contract
 
   const update = useCallback(async () => {
     if (platziPunks) {
-      setLoading(true);
+      setLoading(true); // Previous to get all punks, it's set to true
 
       let tokenIds;
 
       if (!library.utils.isAddress(owner)) {
         const totalSupply = await platziPunks.methods.totalSupply().call();
+        // Number because web3 parses normally to String
         tokenIds = new Array(Number(totalSupply))
           .fill()
           .map((_, index) => index);
@@ -98,10 +101,11 @@ const usePunksData = ({ owner = null } = {}) => {
       const punks = await Promise.all(punksPromise);
 
       setPunks(punks);
-      setLoading(false);
+      setLoading(false);  // After getting all punks, it's switched to false
     }
   }, [platziPunks, owner, library?.utils]);
 
+  // Get all Punks data with the first render
   useEffect(() => {
     update();
   }, [update]);

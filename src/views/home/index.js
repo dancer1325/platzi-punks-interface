@@ -14,6 +14,7 @@ import { useWeb3React } from "@web3-react/core";
 import usePlatziPunks from "../../hooks/usePlatziPunks";
 import useTruncatedAddress from "../../hooks/useTruncatedAddress";
 
+// View for the Home
 const Home = () => {
   // Create state variables
   const [nextId, setNextId] = useState(-1);

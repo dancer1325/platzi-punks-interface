@@ -21,6 +21,7 @@ import Loading from "../../components/loading";
 import PunkCard from "../../components/punk-card";
 import usePlatziPunks from "../../hooks/usePlatziPunks";
 
+// View shown for each Punk
 const Punk = () => {
   const [transfering, setTransfering] = useState(false);
   const { tokenId } = useParams();

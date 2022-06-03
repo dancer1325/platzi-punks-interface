@@ -17,6 +17,7 @@ import { Link, useLocation, useHistory } from "react-router-dom";
 import { useState } from "react";
 import { SearchIcon } from "@chakra-ui/icons";
 
+// View to list all Punks
 const Punks = () => {
   const { search } = useLocation();
   const { push } = useHistory();
@@ -26,6 +27,7 @@ const Punks = () => {
     new URLSearchParams(search).get("address")
   );
   const { active, library } = useWeb3React();
+  // Place outside this file in order not to overload it
   const { punks, loading } = usePunksData({
     owner: submitted && validAddress ? address : null,
   });
@@ -48,6 +50,7 @@ const Punks = () => {
     }
   };
 
+  // In case the user hasn't logged in
   if (!active) return <RequestAccess />;
 
   return (
@@ -63,24 +66,26 @@ const Punks = () => {
               isInvalid={!validAddress}
               value={address ?? ""}
               onChange={handleAddressChange}
-              placeholder="Buscar por dirección"
+              placeholder="Look for by address"
             />
             <InputRightElement width="5.5rem">
               <Button type="submit" h="1.75rem" size="sm">
-                Buscar
+                Search
               </Button>
             </InputRightElement>
           </InputGroup>
           {submitted && !validAddress && (
-            <FormHelperText>Dirección inválida</FormHelperText>
+            <FormHelperText>Invalid address</FormHelperText>
           )}
         </FormControl>
       </form>
       {loading ? (
         <Loading />
       ) : (
+        //  1fr  To occupy all the screen
         <Grid templateColumns="repeat(auto-fill, minmax(250px, 1fr))" gap={6}>
           {punks.map(({ name, image, tokenId }) => (
+            //  key To manage the indexing of each element
             <Link key={tokenId} to={`/punks/${tokenId}`}>
               <PunkCard name={name} image={image} />
             </Link>
