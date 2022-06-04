@@ -20,9 +20,9 @@ import { SearchIcon } from "@chakra-ui/icons";
 // View to list all Punks
 const Punks = () => {
   const { search } = useLocation();
-  const { push } = useHistory();
+  const { push } = useHistory();  // Handle the state of the app for the routing
   const [validAddress, setValidAddress] = useState(true);
-  const [submitted, setSubmitted] = useState(true);
+  const [submitted, setSubmitted] = useState(true); // Required to route to the routed page
   const [address, setAddress] = useState(
     new URLSearchParams(search).get("address")
   );
@@ -34,17 +34,18 @@ const Punks = () => {
 
   const handleAddressChange = ({ target: { value } }) => {
     setAddress(value);
+    // Next useStates invalid till the point to submit and check them
     setValidAddress(false);
     setSubmitted(false);
   };
 
   const submit = (event) => {
-    event.preventDefault();
+    event.preventDefault(); // Avoid default behavior of the form, such as refresh it
     if (address) {
       const isValid = library.utils.isAddress(address);
       setValidAddress(isValid);
       setSubmitted(true);
-      if (isValid) push(`/punks?address=${address}`);
+      if (isValid) push(`/punks?address=${address}`); // Route to another URL, which it's not configured in the routing between pages
     } else {
       push("/punks");
     }
@@ -59,7 +60,7 @@ const Punks = () => {
         <FormControl>
           <InputGroup mb={3}>
             <InputLeftElement
-              pointerEvents="none"
+              pointerEvents="none"  // Avoid having problems in the moment to pass the pointer
               children={<SearchIcon color="gray.300" />}
             />
             <Input

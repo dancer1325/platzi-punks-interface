@@ -24,7 +24,7 @@ import usePlatziPunks from "../../hooks/usePlatziPunks";
 // View shown for each Punk
 const Punk = () => {
   const [transfering, setTransfering] = useState(false);
-  const { tokenId } = useParams();
+  const { tokenId } = useParams();  // Get tokenId from the urlParams
   const { active, library, account } = useWeb3React();
   const { loading, punk, update } = usePunkData(tokenId);
   const platziPunks = usePlatziPunks();
@@ -32,25 +32,31 @@ const Punk = () => {
 
   const transfer = () => {
     setTransfering(true);
-    const address = prompt("Ingresa la dirección");
+    const address = prompt("Add the address to transfer the punk");
 
     const isAddress = library.utils.isAddress(address);
 
     if (!isAddress) {
-      alert("La dirección no es válida");
+      alert("Address isn't valid");
       setTransfering(false);
     } else {
       platziPunks.methods
         .safeTransferFrom(punk.owner, address, punk.tokenId)
+        // https://docs.openzeppelin.com/contracts/4.x/api/token/erc721#IERC721-safeTransferFrom-address-address-uint256-
         .send({
           from: account,
         })
-        .on("error", () => {
+        .on("error", (error) => {
           setTransfering(false);
+          toast({
+            title: "Transaction rejected",
+            description: error.message,
+            status: "error",
+          })
         })
         .on("transactionHash", (txHash) => {
           toast({
-            title: "Transacción enviada",
+            title: "Transaction sent",
             description: txHash,
             status: "info",
           });
@@ -58,11 +64,11 @@ const Punk = () => {
         .on("receipt", () => {
           setTransfering(false);
           toast({
-            title: "Transacción confirmada",
-            description: `El punk ahora pertenece a ${address}`,
+            title: "Transaction confirmed",
+            description: `Punk is owned by ${address}`,
             status: "success",
           });
-          update();
+          update(); // Update since it would have already transferred
         });
     }
   };
@@ -87,12 +93,12 @@ const Punk = () => {
           image={punk.image}
         />
         <Button
-          disabled={punk.owner !== account}
+          disabled={punk.owner !== account}   // If you aren't the owner of the punk
           isLoading={transfering}
           colorScheme="green"
           onClick={transfer}
         >
-          {punk.owner !== account ? "No eres el dueño" : "Transferir"}
+          {punk.owner !== account ? "You aren't the owner" : "Transfer"}
         </Button>
       </Stack>
       <Stack width="100%" spacing={5}>
@@ -113,8 +119,8 @@ const Punk = () => {
         <Table size="sm" variant="simple">
           <Thead>
             <Tr>
-              <Th>Atributo</Th>
-              <Th>Valor</Th>
+              <Th>Attribute</Th>
+              <Th>Value</Th>
             </Tr>
           </Thead>
           <Tbody>

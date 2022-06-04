@@ -85,10 +85,12 @@ const usePunksData = ({ owner = null } = {}) => {
           .fill()
           .map((_, index) => index);
       } else {
+        // https://docs.openzeppelin.com/contracts/4.x/api/token/erc721#IERC721-balanceOf-address-
         const balanceOf = await platziPunks.methods.balanceOf(owner).call();
         const tokenIdsOfOwner = new Array(Number(balanceOf))
           .fill()
           .map((_, index) =>
+            // https://docs.openzeppelin.com/contracts/4.x/api/token/erc721#IERC721Enumerable-tokenOfOwnerByIndex-address-uint256-
             platziPunks.methods.tokenOfOwnerByIndex(owner, index).call()
           );
         tokenIds = await Promise.all(tokenIdsOfOwner);
@@ -118,18 +120,19 @@ const usePunksData = ({ owner = null } = {}) => {
 };
 
 const usePunkData = (tokenId = null) => {
-  const [punk, setPunk] = useState({});
+  const [punk, setPunk] = useState({}); // {} define an empty object
   const [loading, setLoading] = useState(true);
   const platziPunks = usePlatziPunks();
 
   const update = useCallback(async () => {
+    // tokenId can be 0 --> you must compare against null
     if (platziPunks && tokenId != null) {
-      setLoading(true);
+      setLoading(true);  // Previous to get the punk, it's set to true
 
       const punk = await getPunkData({ tokenId, platziPunks });
 
       setPunk(punk);
-      setLoading(false);
+      setLoading(false); // After getting the punk, it's switched to false
     }
   }, [platziPunks, tokenId]);
 

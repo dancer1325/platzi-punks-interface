@@ -61,6 +61,7 @@ const WalletData = () => {
         <Tag colorScheme="green" borderRadius="full">
           <TagLabel>
             <Link to={`/punks?address=${account}`}>{truncatedAddress}</Link>
+          {/* Route to the page with the address routed */}
           </TagLabel>
           <Badge
             d={{
